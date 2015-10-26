@@ -5,7 +5,7 @@
  * Copyright (c) 2013-2015 Michael Benford
  * License: MIT
  *
- * Generated at 2015-10-05 10:47:21 +0200
+ * Generated at 2015-10-26 16:02:09 +0100
  */
 (function() {
 'use strict';
@@ -572,6 +572,7 @@ tagsInput.directive('autoComplete', ["$document", "$timeout", "$sce", "$q", "tag
             self.index = -1;
             self.selected = null;
             self.query = null;
+            self.load.cancel();
         };
         self.show = function() {
             if (options.selectFirstMatch) {
@@ -1025,11 +1026,15 @@ tagsInput.factory('tiUtil', ["$timeout", function($timeout) {
 
     self.debounce = function(fn, delay) {
         var timeoutId;
-        return function() {
+        var debouncedFn = function() {
             var args = arguments;
             $timeout.cancel(timeoutId);
             timeoutId = $timeout(function() { fn.apply(null, args); }, delay);
         };
+        debouncedFn.cancel = function () {
+            $timeout.cancel(timeoutId);
+        };
+        return debouncedFn;
     };
 
     self.makeObjectArray = function(array, key) {
